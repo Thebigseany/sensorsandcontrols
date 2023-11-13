@@ -1,0 +1,21 @@
+<launch>
+    <!-- Adjust arguments -->
+    <arg name="eye" default="/head_camera/rgb/"/>
+    <arg name="tracker_frame" default="tracked_object_frame"/>
+    <arg name="ref_frame" default="head_camera_rgb_optical_frame"/>
+
+    <!-- Launch Visp Auto Tracker -->
+    <include file="$(find visp_auto_tracker)/launch/tracklive_usb.launch">
+        <remap from="/usb_cam/image_raw" to="/head_camera/rgb/image_raw"/>
+        <remap from="/usb_cam/camera_info" to="/head_camera/rgb/camera_info"/>
+
+    </include>
+
+    <!-- Run rqt_image_view -->
+    <node name="rqt_image_view" pkg="rqt_image_view" type="rqt_image_view" respawn="false" output="screen">
+        <remap from="image" to="/visp_auto_tracker/image" />
+    </node>
+
+    <!-- Launch follower node -->
+    <node respawn="true" pkg="sensors_project" type="tracker_node" name="guide_tracker_node" output="screen"/>
+</launch>
